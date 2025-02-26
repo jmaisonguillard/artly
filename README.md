@@ -1,66 +1,213 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Artly
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Artly Logo](https://via.placeholder.com/150x50?text=Artly)
 
-## About Laravel
+## Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Artly is a modern platform connecting artists with clients seeking custom artwork. The platform streamlines the commission process, provides secure transactions, and fosters a community of creative professionals.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### For Artists
+- **Portfolio Management**: Showcase your work, manage commission slots, and set availability status
+- **Commission Workflow**: Track projects through different stages (sketch, lineart, coloring)
+- **Business Tools**: Analytics dashboard to track earnings, client demographics, and portfolio performance
 
-## Learning Laravel
+### For Clients
+- **Artist Discovery**: Find the perfect artist with advanced search filters by style, price range, and availability
+- **Commission Process**: Easy submission of project briefs with reference images, budget specifications, and timeline discussion
+- **Account Features**: Track commission history, save favorite artists, and leave reviews
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Technology Stack
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Frontend**: React.js with TypeScript
+- **Styling**: TailwindCSS with custom theming
+- **Icons**: Lucide React
+- **State Management**: React Context API
+- **Authentication**: JWT with secure HTTP-only cookies
+- **Form Handling**: React Hook Form with validation
+- **API Requests**: Axios
+- **Template Engine**: Blade (Laravel)
+- **Frontend Build**: Vite
+- **Testing**: Jest and React Testing Library
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Project Structure
 
-## Laravel Sponsors
+```
+artly/
+├── app/                   # Server-side code
+├── resources/             # Frontend source code
+│   ├── js/                # React components
+│   ├── css/               # Global styles
+│   └── views/             # Blade templates
+├── public/                # Static assets
+├── routes/                # API routes
+├── tests/                 # Test files
+└── docs/                  # Documentation
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Getting Started
 
-### Premium Partners
+### Prerequisites
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- Node.js (v16+)
+- PHP (v8.1+)
+- Composer
+- MySQL (v8.0+)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-org/artly.git
+   cd artly
+   ```
+
+2. Install PHP dependencies:
+   ```bash
+   composer install
+   ```
+
+3. Install JavaScript dependencies:
+   ```bash
+   npm install
+   ```
+
+4. Copy the environment file and update with your settings:
+   ```bash
+   cp .env.example .env
+   ```
+
+5. Generate application key:
+   ```bash
+   php artisan key:generate
+   ```
+
+6. Run database migrations:
+   ```bash
+   php artisan migrate --seed
+   ```
+
+7. Start the development server:
+   ```bash
+   php artisan serve
+   ```
+
+8. In a separate terminal, compile and watch frontend assets:
+   ```bash
+   npm run dev
+   ```
+
+## Development Guidelines
+
+### Code Style
+
+- Follow the [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript)
+- Use TypeScript for all new components
+- Write meaningful component and function names
+- Comment complex logic
+
+### Component Guidelines
+
+- Create reusable components in the `resources/js/Components` directory
+- Use Tailwind utility classes for styling
+- Make components responsive by default
+- Implement accessibility standards (WCAG 2.1)
+
+### Design System
+
+Our design system is based on Tailwind with custom extensions:
+
+- **Colors**: 
+  - Primary: `purple-600` (`#9333EA`)
+  - Secondary: `indigo-700` (`#4338CA`)
+  - Neutral: Gray scale from 50 to 900
+  - Success: `green-500` (`#10B981`)
+  - Warning: `yellow-400` (`#FBBF24`)
+  - Error: `red-500` (`#EF4444`)
+
+- **Typography**:
+  - Headings: Inter (sans-serif)
+  - Body: Inter (sans-serif)
+  - Sizes: Follow Tailwind's scale (xs, sm, base, lg, xl, 2xl, etc.)
+
+- **Spacing**:
+  - Use Tailwind's spacing scale (m-1, p-2, etc.)
+  - Maintain consistent spacing between components
+
+- **Shadows**:
+  - Use Tailwind's shadow utilities (shadow-sm, shadow, shadow-lg, etc.)
+
+- **Border Radius**:
+  - Buttons and inputs: `rounded-lg`
+  - Cards and larger elements: `rounded-xl` or `rounded-2xl`
+  - Pills and tags: `rounded-full`
+
+### Icons
+
+Use Lucide React for icons. Example:
+
+```jsx
+import { Search, Palette, Users } from 'lucide-react';
+
+// In component
+<Search className="w-5 h-5 text-gray-400" />
+```
+
+### Form Fields
+
+Form fields should include:
+- Appropriate label
+- Placeholder text
+- Validation messages
+- Focus states with `ring-2 ring-purple-500`
+
+### Links & Routing
+
+For internal links in development, use hash placeholders to prevent Laravel trying to render dynamic routes:
+
+```jsx
+<a href="#" className="text-purple-600 hover:text-purple-500">Link Text</a>
+```
+
+For production, replace with the appropriate route:
+
+```jsx
+<a href="{{ route('artists.show', ['id' => 1]) }}" className="text-purple-600 hover:text-purple-500">Link Text</a>
+```
+
+## Testing
+
+### Unit Tests
+
+Run unit tests:
+
+```bash
+npm run test
+```
+
+### End-to-End Tests
+
+Run end-to-end tests:
+
+```bash
+npm run test:e2e
+```
+
+## Deployment
+
+Our CI/CD pipeline uses GitHub Actions to deploy to our staging and production environments:
+
+1. Push to `develop` branch triggers deployment to staging
+2. Push to `main` branch triggers deployment to production
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Create a new branch from `develop`
+2. Make your changes
+3. Submit a pull request to `develop`
+4. Ensure all tests pass before merging
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+© 2025 Artly. All rights reserved.
