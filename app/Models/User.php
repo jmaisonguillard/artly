@@ -29,6 +29,11 @@ class User extends Authenticatable
         'verification_token',
     ];
 
+    protected $appends = [
+        'avatar_url',
+        'full_name',
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -51,6 +56,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the user's avatar URL.
+     * If no avatar is set, returns a generated initial avatar based on the user's name.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        if (empty($this->avatar)) {
+            $initials = strtoupper(substr($this->first_name, 0, 1) . substr($this->last_name, 0, 1));
+            return "https://ui-avatars.com/api/?name=" . urlencode($initials) . "&background=random&color=fff";
+        }
+
+        return $this->avatar;
     }
 
     /**

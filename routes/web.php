@@ -19,7 +19,7 @@ Route::get('/verify-email/{token}', [UserController::class, 'verifyEmail'])
 Route::get('/verify-email/invalid', fn() => Inertia::render('verify/VerifyInvalid'));
 Route::get('/verify-email/success', fn() => Inertia::render('verify/VerifySuccess'));
 Route::post('/reverify', [UserController::class, 'reverify']);
-
+Route::post('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth')->group(function () {
     Route::prefix('dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');

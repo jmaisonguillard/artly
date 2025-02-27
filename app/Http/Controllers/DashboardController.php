@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Commission;
-
+use App\Models\CommissionMessage;
+use App\Models\Message;
 class DashboardController extends Controller
 {
     public function index()
@@ -58,9 +59,9 @@ class DashboardController extends Controller
             // Only include active commissions (not completed or cancelled)
             // Limit to 5 results
             $upcomingDeadlines = Commission::where('artist_id', $user->id)
-                // ->whereIn('status', ['pending', 'in_progress', 'review', 'revision'])
-                // ->whereDate('due_date', '>=', now())
-                // ->whereDate('due_date', '<=', now()->addMonths(2))
+                ->whereIn('status', ['pending', 'in_progress', 'review', 'revision'])
+                ->whereDate('due_date', '>=', now())
+                ->whereDate('due_date', '<=', now()->addMonths(2))
                 ->with(['client:id,display_name,avatar'])
                 ->orderBy('due_date')
                 ->limit(2)
@@ -78,13 +79,78 @@ class DashboardController extends Controller
                 });
         }
 
-        return Inertia::render('dashboard/Artist', [
+        // Get recent messages from commissions and general messages
+        $recentMessages = [];
+
+        // Get commission messages
+        $commissionMessages = CommissionMessage::with(['user:id,display_name,avatar', 'commission:id,title'])
+            ->where(function($query) use ($user) {
+                if ($user->role == 'client') {
+                    $query->whereHas('commission', function($q) use ($user) {
+                        $q->where('client_id', $user->id);
+                    });
+                } else if ($user->role == 'artist') {
+                    $query->whereHas('commission', function($q) use ($user) {
+                        $q->where('artist_id', $user->id);
+                    });
+                }
+            })
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function($message) {
+                return [
+                    'id' => $message->id,
+                    'content' => $message->content,
+                    'sender' => [
+                        'name' => $message->user->display_name,
+                        'avatar' => $message->user->avatar_url
+                    ],
+                    'commission' => [
+                        'id' => $message->commission->id,
+                        'title' => $message->commission->title
+                    ],
+                    'created_at' => $message->created_at,
+                    'created_at_human' => $message->created_at->diffForHumans(),
+                    'type' => 'commission'
+                ];
+            });
+
+        $directMessages = Message::with(['sender:id,display_name,avatar_url'])
+            ->where(function($query) use ($user) {
+                $query->where('sender_id', $user->id)
+                    ->orWhere('recipient_id', $user->id);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function($message) {
+                return [
+                    'id' => $message->id,
+                    'content' => $message->content,
+                    'sender' => [
+                        'name' => $message->sender->display_name,
+                        'avatar' => $message->sender->avatar_url
+                    ],
+                    'created_at' => $message->created_at,
+                    'created_at_human' => $message->created_at->diffForHumans(),
+                    'type' => 'direct'
+                ];
+            });
+
+        // Combine both message types and sort by created_at
+        $recentMessages = $commissionMessages->concat($directMessages)
+            ->sortByDesc('created_at')
+            ->take(2)
+            ->values();
+
+        return Inertia::render('dashboard/Show', [
+            'user' => $user,
             'commissions' => $commissions->items(),
             'active_commission_count' => $commissions->count(),
             'this_month_earnings' => $thisMonthEarnings,
             'completed_projects_count' => $completedProjectsCount,
             'pending_reviews_count' => $pendingReviewsCount,
             'upcoming_deadlines' => $upcomingDeadlines,
+            'recent_messages' => $recentMessages,
         ]);
 
 

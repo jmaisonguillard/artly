@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 
 const UpcomingDeadlines = ({ deadlines }) => {
-    console.log(deadlines);
   // Function to determine days remaining
   const getDaysRemaining = (dueDateString) => {
     const dueDate = new Date(dueDateString);
