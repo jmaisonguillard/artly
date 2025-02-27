@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   Bell,
@@ -25,11 +25,30 @@ import {
   Plus,
   Users
 } from 'lucide-react';
+import { getDaysRemaining, getFormattedDate, getFormattedTime, getDeadlineBadgeColor, getDaysRemainingText } from '../../utils';
+import UpcomingDeadlines from './components/UpcomingDeadlines';
 
-const DashboardPage = () => {
+const DashboardPage = ({ commissions, active_commission_count, this_month_earnings, completed_projects_count, pending_reviews_count, upcoming_deadlines }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(false);
+  }, []);
+
+  const getStatusColor = (status) => {
+    const statusColors = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      in_progress: 'bg-blue-100 text-blue-800',
+      review: 'bg-purple-100 text-purple-800',
+      revision: 'bg-orange-100 text-orange-800',
+      completed: 'bg-green-100 text-green-800',
+      cancelled: 'bg-red-100 text-red-800'
+    };
+    return statusColors[status] || 'bg-gray-100 text-gray-800';
+  };
 
   // Toggle sidebar visibility for mobile view
   const toggleSidebar = () => {
@@ -48,9 +67,8 @@ const DashboardPage = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:z-auto ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:z-auto ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <div className="h-full flex flex-col">
           {/* Sidebar Header */}
@@ -87,11 +105,10 @@ const DashboardPage = () => {
               <li>
                 <a
                   href="#"
-                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${
-                    activeTab === 'overview'
-                      ? 'bg-purple-50 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${activeTab === 'overview'
+                    ? 'bg-purple-50 text-purple-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                   onClick={() => setActiveTab('overview')}
                 >
                   <Home className="h-5 w-5 mr-3" />
@@ -101,11 +118,10 @@ const DashboardPage = () => {
               <li>
                 <a
                   href="#"
-                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${
-                    activeTab === 'commissions'
-                      ? 'bg-purple-50 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${activeTab === 'commissions'
+                    ? 'bg-purple-50 text-purple-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                   onClick={() => setActiveTab('commissions')}
                 >
                   <Palette className="h-5 w-5 mr-3" />
@@ -115,11 +131,10 @@ const DashboardPage = () => {
               <li>
                 <a
                   href="#"
-                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${
-                    activeTab === 'messages'
-                      ? 'bg-purple-50 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${activeTab === 'messages'
+                    ? 'bg-purple-50 text-purple-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                   onClick={() => setActiveTab('messages')}
                 >
                   <MessageSquare className="h-5 w-5 mr-3" />
@@ -129,11 +144,10 @@ const DashboardPage = () => {
               <li>
                 <a
                   href="#"
-                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${
-                    activeTab === 'clients'
-                      ? 'bg-purple-50 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${activeTab === 'clients'
+                    ? 'bg-purple-50 text-purple-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                   onClick={() => setActiveTab('clients')}
                 >
                   <Users className="h-5 w-5 mr-3" />
@@ -143,11 +157,10 @@ const DashboardPage = () => {
               <li>
                 <a
                   href="#"
-                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${
-                    activeTab === 'earnings'
-                      ? 'bg-purple-50 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${activeTab === 'earnings'
+                    ? 'bg-purple-50 text-purple-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                   onClick={() => setActiveTab('earnings')}
                 >
                   <DollarSign className="h-5 w-5 mr-3" />
@@ -157,11 +170,10 @@ const DashboardPage = () => {
               <li>
                 <a
                   href="#"
-                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${
-                    activeTab === 'analytics'
-                      ? 'bg-purple-50 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center px-4 py-3 text-sm rounded-lg ${activeTab === 'analytics'
+                    ? 'bg-purple-50 text-purple-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                   onClick={() => setActiveTab('analytics')}
                 >
                   <BarChart2 className="h-5 w-5 mr-3" />
@@ -321,11 +333,7 @@ const DashboardPage = () => {
               </div>
               <div className="mt-4">
                 <div className="text-2xl font-bold text-gray-900">
-                  {/* Number will be added later */}
-                </div>
-                <div className="mt-1 text-xs flex items-center text-green-600">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  <span>{/* Data will be added later */}</span>
+                  {active_commission_count}
                 </div>
               </div>
             </div>
@@ -338,7 +346,7 @@ const DashboardPage = () => {
               </div>
               <div className="mt-4">
                 <div className="text-2xl font-bold text-gray-900">
-                  {/* Number will be added later */}
+                  {pending_reviews_count}
                 </div>
                 <div className="mt-1 text-xs flex items-center text-gray-600">
                   <span>{/* Data will be added later */}</span>
@@ -354,11 +362,7 @@ const DashboardPage = () => {
               </div>
               <div className="mt-4">
                 <div className="text-2xl font-bold text-gray-900">
-                  {/* Number will be added later */}
-                </div>
-                <div className="mt-1 text-xs flex items-center text-green-600">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  <span>{/* Data will be added later */}</span>
+                  ${this_month_earnings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
               </div>
             </div>
@@ -371,7 +375,7 @@ const DashboardPage = () => {
               </div>
               <div className="mt-4">
                 <div className="text-2xl font-bold text-gray-900">
-                  {/* Number will be added later */}
+                  {completed_projects_count}
                 </div>
                 <div className="mt-1 text-xs flex items-center text-gray-600">
                   <span>{/* Data will be added later */}</span>
@@ -410,7 +414,68 @@ const DashboardPage = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {/* Table rows will be added later */}
+                      {loading ? (
+                        <tr>
+                          <td colSpan="5" className="px-4 py-4 text-center text-gray-500">
+                            Loading commissions...
+                          </td>
+                        </tr>
+                      ) : commissions.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="px-4 py-4 text-center text-gray-500">
+                            No active commissions found
+                          </td>
+                        </tr>
+                      ) : (
+                        commissions.map((commission) => (
+                          <tr
+                            key={commission.id}
+                            className="cursor-pointer hover:bg-gray-50 transition-colors"
+                            onClick={() => window.location.href = `/dashboard/commission/${commission.id}`}
+                          >
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="ml-4">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {commission.title}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    {commission.commission_id}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">{commission.client.name}</div>
+                              <div className="text-sm text-gray-500">{commission.client.email}</div>
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">
+                                {new Date(commission.due_date).toLocaleDateString()}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {new Date(commission.due_date) < new Date() ? 'Overdue' : 'On time'}
+                              </div>
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(commission.status)}`}>
+                                {commission.status.replace(/[_-]/g, ' ').toUpperCase()}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                <div
+                                  className="bg-purple-600 h-2.5 rounded-full"
+                                  style={{ width: `${commission.progress}%` }}
+                                ></div>
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {commission.progress}% Complete
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -426,26 +491,7 @@ const DashboardPage = () => {
               </div>
             </div>
 
-            {/* Upcoming Deadlines */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100">
-              <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-                <h2 className="font-semibold text-gray-900">Upcoming Deadlines</h2>
-                <button className="text-gray-400 hover:text-gray-500">
-                  <Calendar className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="p-6">
-                <ul className="space-y-5">
-                  {/* List items will be added later */}
-                </ul>
-                <div className="mt-6">
-                  <a href="#" className="text-sm text-purple-600 font-medium hover:text-purple-800 flex items-center justify-center">
-                    View all deadlines
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </a>
-                </div>
-              </div>
-            </div>
+            <UpcomingDeadlines deadlines={upcoming_deadlines} />
           </div>
 
           {/* Bottom Sections */}
