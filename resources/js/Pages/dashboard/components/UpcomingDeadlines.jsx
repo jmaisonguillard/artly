@@ -62,10 +62,6 @@ const UpcomingDeadlines = ({ deadlines }) => {
       <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
         <h2 className="font-semibold text-gray-900">Upcoming Deadlines</h2>
         <div className="flex space-x-3">
-          <button className="text-sm text-gray-600 hover:text-gray-900 flex items-center">
-            Filter
-            <ChevronDown className="ml-1 h-4 w-4" />
-          </button>
           <button className="text-gray-400 hover:text-gray-500">
             <Calendar className="h-5 w-5" />
           </button>
@@ -124,13 +120,6 @@ const UpcomingDeadlines = ({ deadlines }) => {
             </li>
           )}
         </ul>
-
-        <div className="mt-6">
-          <a href="#" className="text-sm text-purple-600 font-medium hover:text-purple-800 flex items-center justify-center">
-            View all deadlines
-            <ChevronRight className="h-4 w-4 ml-1" />
-          </a>
-        </div>
       </div>
     </div>
   );

@@ -65,7 +65,13 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         if (empty($this->avatar)) {
-            $initials = strtoupper(substr($this->first_name, 0, 1) . substr($this->last_name, 0, 1));
+            $initials = '';
+            if (!empty($this->first_name) && !empty($this->last_name)) {
+                $initials = strtoupper(substr($this->first_name, 0, 1) . substr($this->last_name, 0, 1));
+            } elseif (!empty($this->display_name)) {
+                $initials = strtoupper(substr($this->display_name, 0, 1));
+            }
+
             return "https://ui-avatars.com/api/?name=" . urlencode($initials) . "&background=random&color=fff";
         }
 
@@ -78,5 +84,15 @@ class User extends Authenticatable
     public function getFullNameAttribute(): string
     {
         return "{$this->first_name} {$this->last_name}";
+    }
+
+    public function isArtist(): bool
+    {
+        return $this->role === 'artist';
+    }
+
+    public function isClient(): bool
+    {
+        return $this->role === 'client';
     }
 }

@@ -10,8 +10,11 @@ import {
 } from 'lucide-react';
 import UpcomingDeadlines from './components/UpcomingDeadlines';
 import DashboardLayout from './layout/DashboardLayout';
+import LatestReviewsDashboard from './components/LatestReviews';
+import ActivityFeed from './components/ActivityFeed';
+import RecentMessages from './components/RecentMessages';
 
-const DashboardPage = ({ user, commissions, active_commission_count, this_month_earnings, completed_projects_count, pending_reviews_count, upcoming_deadlines, recent_messages }) => {
+const DashboardPage = ({ user, commissions, commissions_pagination, active_commission_count, this_month_earnings, completed_projects_count, pending_reviews_count, upcoming_deadlines, recent_messages, latest_reviews, activity_feed }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -39,10 +42,6 @@ const DashboardPage = ({ user, commissions, active_commission_count, this_month_
                     <p className="mt-1 text-gray-600">Welcome back! Here's what's happening with your commissions.</p>
                 </div>
                 <div className="mt-4 sm:mt-0 flex flex-wrap gap-3">
-                    <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                        <Filter className="h-4 w-4 mr-2" />
-                        Filter
-                    </button>
                     <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm bg-purple-600 text-sm font-medium text-white hover:bg-purple-700">
                         <Plus className="h-4 w-4 mr-2" />
                         New Commission
@@ -75,9 +74,6 @@ const DashboardPage = ({ user, commissions, active_commission_count, this_month_
                     <div className="mt-4">
                         <div className="text-2xl font-bold text-gray-900">
                             {pending_reviews_count}
-                        </div>
-                        <div className="mt-1 text-xs flex items-center text-gray-600">
-                            <span>{/* Data will be added later */}</span>
                         </div>
                     </div>
                 </div>
@@ -209,12 +205,8 @@ const DashboardPage = ({ user, commissions, active_commission_count, this_month_
                         </div>
                         <div className="mt-6 flex items-center justify-between">
                             <p className="text-sm text-gray-500">
-                                Showing <span className="font-medium text-gray-900">5</span> of <span className="font-medium text-gray-900">12</span> projects
+                                Showing <span className="font-medium text-gray-900">{commissions_pagination.to}</span> of <span className="font-medium text-gray-900">{commissions_pagination.total}</span> projects
                             </p>
-                            <a href="#" className="text-sm text-purple-600 font-medium hover:text-purple-800 flex items-center">
-                                View all
-                                <ChevronRight className="h-4 w-4 ml-1" />
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -224,81 +216,14 @@ const DashboardPage = ({ user, commissions, active_commission_count, this_month_
 
             {/* Bottom Sections */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
-                {/* Recent Messages */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-100">
-                    <div className="px-6 py-5 border-b border-gray-100">
-                        <h2 className="font-semibold text-gray-900">Recent Messages</h2>
-                    </div>
-                    <div className="p-6">
-                        <ul className="space-y-4">
-                            {recent_messages.map((message) => (
-                                <li key={`${message.type}-${message.id}`} className="flex items-start gap-4 min-w-0">
-                                    <img
-                                        src={message.sender.avatar}
-                                        alt={message.sender.name}
-                                        className="w-10 h-10 rounded-full flex-shrink-0"
-                                    />
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between">
-                                            <p className="text-sm font-medium text-gray-900 truncate">{message.sender.name}</p>
-                                            <span className="text-xs text-gray-500 flex-shrink-0 ml-2">{message.created_at_human}</span>
-                                        </div>
-                                        <p className="text-sm text-gray-600 truncate">{message.content}</p>
-                                        {message.type === 'commission' && (
-                                            <p className="text-xs text-purple-600 truncate">
-                                                Re: {message.commission.title}
-                                            </p>
-                                        )}
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                        <div className="mt-6">
-                            <a href="#" className="text-sm text-purple-600 font-medium hover:text-purple-800 flex items-center justify-center">
-                                View all messages
-                                <ChevronRight className="h-4 w-4 ml-1" />
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                <RecentMessages recent_messages={recent_messages} />
+
 
                 {/* Recent Reviews */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-100">
-                    <div className="px-6 py-5 border-b border-gray-100">
-                        <h2 className="font-semibold text-gray-900">Latest Reviews</h2>
-                    </div>
-                    <div className="p-6">
-                        <ul className="space-y-4">
-                            {/* List items will be added later */}
-                        </ul>
-                        <div className="mt-6">
-                            <a href="#" className="text-sm text-purple-600 font-medium hover:text-purple-800 flex items-center justify-center">
-                                View all reviews
-                                <ChevronRight className="h-4 w-4 ml-1" />
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                <LatestReviewsDashboard reviews={latest_reviews} />
 
                 {/* Activity Feed */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-100">
-                    <div className="px-6 py-5 border-b border-gray-100">
-                        <h2 className="font-semibold text-gray-900">Activity Feed</h2>
-                    </div>
-                    <div className="p-6">
-                        <div className="flow-root">
-                            <ul className="-mb-8">
-                                {/* List items will be added later */}
-                            </ul>
-                        </div>
-                        <div className="mt-6">
-                            <a href="#" className="text-sm text-purple-600 font-medium hover:text-purple-800 flex items-center justify-center">
-                                View all activity
-                                <ChevronRight className="h-4 w-4 ml-1" />
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                <ActivityFeed activity_feed={activity_feed} />
             </div>
         </DashboardLayout>
     );

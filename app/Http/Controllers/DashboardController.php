@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Commission;
 use App\Models\CommissionMessage;
 use App\Models\Message;
+use App\Models\CommissionReview;
+
 class DashboardController extends Controller
 {
     public function index()
@@ -84,20 +86,20 @@ class DashboardController extends Controller
 
         // Get commission messages
         $commissionMessages = CommissionMessage::with(['user:id,display_name,avatar', 'commission:id,title'])
-            ->where(function($query) use ($user) {
+            ->where(function ($query) use ($user) {
                 if ($user->role == 'client') {
-                    $query->whereHas('commission', function($q) use ($user) {
+                    $query->whereHas('commission', function ($q) use ($user) {
                         $q->where('client_id', $user->id);
                     });
                 } else if ($user->role == 'artist') {
-                    $query->whereHas('commission', function($q) use ($user) {
+                    $query->whereHas('commission', function ($q) use ($user) {
                         $q->where('artist_id', $user->id);
                     });
                 }
             })
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function($message) {
+            ->map(function ($message) {
                 return [
                     'id' => $message->id,
                     'content' => $message->content,
@@ -116,13 +118,13 @@ class DashboardController extends Controller
             });
 
         $directMessages = Message::with(['sender:id,display_name,avatar_url'])
-            ->where(function($query) use ($user) {
+            ->where(function ($query) use ($user) {
                 $query->where('sender_id', $user->id)
                     ->orWhere('recipient_id', $user->id);
             })
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function($message) {
+            ->map(function ($message) {
                 return [
                     'id' => $message->id,
                     'content' => $message->content,
@@ -142,18 +144,104 @@ class DashboardController extends Controller
             ->take(2)
             ->values();
 
+
+        // Get latest reviews
+        $latestReviews = CommissionReview::with(['client:id,display_name,avatar_url', 'commission:id,title'])
+            ->orderBy('created_at', 'desc')
+            ->take(2)
+            ->get()
+            ->map(function ($review) {
+                return [
+                    'id' => $review->id,
+                    'rating' => $review->rating,
+                    'content' => $review->content,
+                    'client' => [
+                        'name' => $review->client->display_name,
+                        'avatar' => $review->client->avatar_url
+                    ],
+                    'commission' => [
+                        'id' => $review->commission->id,
+                        'title' => $review->commission->title
+                    ],
+                    'created_at' => $review->created_at,
+                    'created_at_human' => $review->created_at->diffForHumans(),
+                ];
+            });
+
+        // Generate activity feed
+        $activityFeed = collect();
+
+        // Add commission status changes to activity feed
+        $commissionActivities = Commission::where(function ($query) use ($user) {
+                $query->where('client_id', $user->id)->orWhere('artist_id', $user->id);
+            })
+            ->whereNotNull('status_changed_at')
+            ->orderBy('status_changed_at', 'desc')
+            ->take(5)
+            ->get()
+            ->map(function ($commission) {
+                return [
+                    'id' => $commission->id,
+                    'type' => 'commission_update',
+                    'title' => 'Commission Status Updated',
+                    'commission_title' => $commission->title,
+                    'status' => $commission->status,
+                    'timestamp' => $commission->updated_at,
+                    'timestamp_human' => $commission->updated_at->diffForHumans(),
+                    'description' => "Status changed to " . ucfirst(str_replace('_', ' ', $commission->status))
+                ];
+            });
+        $activityFeed = $activityFeed->concat($commissionActivities);
+
+        // Add recent messages to activity feed
+        $messageActivities = $recentMessages->map(function ($message) {
+            return [
+                'id' => $message['id'],
+                'type' => 'message',
+                'title' => 'New Message Received',
+                'sender' => $message['sender'],
+                'content' => $message['content'],
+                'message_type' => $message['type'],
+                'timestamp' => $message['created_at'],
+                'timestamp_human' => $message['created_at_human'],
+                'description' => 'From: ' . $message['sender']['name']
+            ];
+        });
+        $activityFeed = $activityFeed->concat($messageActivities);
+
+        // Add recent reviews to activity feed
+        $reviewActivities = $latestReviews->map(function ($review) {
+            return [
+                'id' => $review['id'],
+                'type' => 'review',
+                'title' => 'New Review Posted',
+                'client' => $review['client'],
+                'rating' => $review['rating'],
+                'content' => $review['content'],
+                'commission' => $review['commission'],
+                'timestamp' => $review['created_at'],
+                'timestamp_human' => $review['created_at_human'],
+                'description' => $review['client']['name'] . ' left a ' . $review['rating'] . '-star review'
+            ];
+        });
+        $activityFeed = $activityFeed->concat($reviewActivities);
+
+        // Sort all activities by timestamp and take the most recent 5
+        $activityFeed = $activityFeed->sortByDesc('timestamp')->take(5)->values();
+
         return Inertia::render('dashboard/Show', [
             'user' => $user,
             'commissions' => $commissions->items(),
+            'commissions_pagination' => $commissions,
             'active_commission_count' => $commissions->count(),
             'this_month_earnings' => $thisMonthEarnings,
             'completed_projects_count' => $completedProjectsCount,
             'pending_reviews_count' => $pendingReviewsCount,
             'upcoming_deadlines' => $upcomingDeadlines,
             'recent_messages' => $recentMessages,
+            'latest_reviews' => $latestReviews,
+            'activity_feed' => $activityFeed,
         ]);
-
-
     }
 
     public function viewCommission(Commission $commission)

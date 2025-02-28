@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CommissionSeeder::class,
             MessageSeeder::class,
+            CommissionReviewSeeder::class,
         ]);
     }
 }
